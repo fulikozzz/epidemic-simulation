@@ -1,6 +1,6 @@
 //import { genRandomPosition, genRandomVelocity } from './utils';
 
-class person {
+class Person {
     constructor(config, id) {
         // ID человека
         this.id = id || Math.random().toString(36).substring(2, 9);
@@ -18,7 +18,7 @@ class person {
         this.status = 'healthy';
     
         // Время заражения
-        this.infectionTime = null;
+        this.infectionStartTime = null;
     
         // Время начала симптомов
         this.symptomStartTime = null;
@@ -46,8 +46,8 @@ class person {
 
         // Снижаем скорость при соблюдении соц дистанции
         if(this.distancing){
-            dx *= this.config.distancingStrictness;
-            dy *= this.config.distancingStrictness;
+            dx *= 1 - this.config.distancingStrictness;
+            dy *= 1 - this.config.distancingStrictness;
         }
         
         // Обновляем позицию
@@ -82,4 +82,4 @@ class person {
 
 }
 
-export default person;
+export default Person;

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import person from './person';
+import Person from './person';
+import simulationConfig from './simulatiionConfig';
 
 const config = {
   distancingRate: 0.5,
@@ -24,27 +25,46 @@ const colors = {
 
 const SimCanvas = () => {
   const canvasRef = useRef(null);
-  const personRef = useRef(null);
+  const personsRef = useRef([]);
   const canvasWidth = 800;
   const canvasHeight = 600;
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    personRef.current = new person(config);
+
+    const simConfig = new simulationConfig();
+
+    const persons = [];
+    for (let i = 0; i < simConfig.totalPeople; i++){
+      const person = new Person(config);
+      persons.push(person);
+    }
+
+    persons[0].status = 'symptomatic';
+    persons[0].infectionStartTime = performance.now();
+ 
+    personsRef.current = persons;
 
     const draw = () => {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      const person = personRef.current;
-      person.move(canvasWidth, canvasHeight);
-      drawPerson(ctx, person);
-      console.table({
-        status: person.status,
-        position: person.position,
-        velocity: person.velocity,
-        dead: person.dead,
-        distancing: person.distancing,
-      });
+
+      const time = performance.now();
+
+      for(const person of personsRef.current){
+        person.move(canvasWidth, canvasHeight);
+        //update
+        drawPerson(ctx, person);
+        console.table({
+          id: person.id,
+          status: person.status,
+          position: person.position,
+          velocity: person.velocity,
+          dead: person.dead,
+          distancing: person.distancing,
+        });
+      }
+      
       requestAnimationFrame(draw);
     };
 
