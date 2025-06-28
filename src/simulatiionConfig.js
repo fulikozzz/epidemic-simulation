@@ -7,7 +7,10 @@ export default class simulationConfig {
     socialDistancePercent;  // Процент людей, которые будут держать дистанцию (от 0 до 1)
     socialDistanceStrictness; // Строгость соблюдения дистанции (от 0 до 1)
     recoverySpeed;            // Скорость выздоровления в мс
-    deathPercent;             // Процент смертности (от 0 до 1)
+    mortalityRate;             // Процент смертности (от 0 до 1)
+    width;
+    height;
+    speed;
 
     constructor(param = {}) {
         this.totalPeople = param.totalPeople || 100; 
@@ -17,6 +20,11 @@ export default class simulationConfig {
         this.symptomaticPeriod = param.symptomaticPeriod || 5000;
         this.socialDistancePercent = param.socialDistancePercent || 0.3;
         this.socialDistanceStrictness = param.socialDistanceStrictness || 0.3;
+        this.recoverySpeed = param.recoverySpeed || 3000;
+        this.mortalityRate = param.mortalityRate || 0.2;
+        this.width = param.width || 800;
+        this.height = param.height || 600;
+        this.speed = param.speed || 1;
     }
     
     // Вывод конфигурации для отладки
