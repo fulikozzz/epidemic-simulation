@@ -1,0 +1,152 @@
+/* Стиль панели настроек */
+
+.settings-panel {
+    background: #f8f9fa;
+    border: 3px solid #c5c7c9;
+    border-radius: 16px;
+    padding: 20px;
+    min-width: 600px;
+    max-width: 800px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.settings-panel h3 {
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    font-size: 1.6rem;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid #17ecb7;
+    padding-bottom: 10px;
+}
+
+.settings-panel > div {
+    display: table-cell;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: start;
+}
+
+.settings-section {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid #17ecb7;
+}
+
+.settings-section h4 {
+    margin: 0 0 15px 8px;
+    color: #2c3e50;
+    font-size: 1.2rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.setting-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.setting-item label {
+    display: inline-block;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.setting-item input {
+    width: 100%;
+    height: 8px;
+    border-radius: 10px;
+    background: #c5c5c5;
+    outline: none;
+    appearance: none;
+    margin-bottom: 8px;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 45%;
+    background: #17ecb7;
+    cursor: pointer;
+    border: 2px solid rgb(255, 255, 255);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.setting-item input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    border: 2px solid #17ecb7;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.setting-item input[type="checkbox"]:checked {
+    background: #17ecb7;
+    position: relative;
+}
+
+.setting-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.setting-description {
+    display: block;
+    font-size: 0.9rem;
+    color: #5c6268;
+    font-style: italic;
+    line-height: 1;
+}
+
+.settings-controls {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.reset-button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.reset-button:hover:not(:disabled) {
+    background: #c0392b;
+}
+
+.reset-button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}

@@ -1,14 +1,14 @@
 //import { genRandomPosition, genRandomVelocity } from './utils';
 
-class Person {
+export default class Person {
     constructor(config, id) {
         // ID человека
         this.id = id || Math.random().toString(36).substring(2, 9);
     
         // Радиус человека на экране
-        this.radius = 15;
+        this.radius = 7;
     
-        // Случайная начальнаяпозиция
+        // Случайная начальная позиция
         this.position = this.genRandomPosition(config.width, config.height);
     
         // Случайная начальная скорость
@@ -32,7 +32,10 @@ class Person {
         // Флаг смерти 
         this.dead = false;
     
-        // Социальное дистанцирование — булевское значение с вероятностью из конфига
+        // Счетчик повторных заражений
+        this.reinfectionCount = 0;
+    
+        // Социальное дистанцирование — булевое значение с вероятностью из конфига
         this.distancing = Math.random() < config.socialDistancePercent;
 
       }
@@ -48,8 +51,9 @@ class Person {
 
         // Снижаем скорость при соблюдении соц дистанции
         if(this.distancing){
-            dx *= 1 - this.config.socialDistanceStrictness;
-            dy *= 1 - this.config.socialDistanceStrictness;
+            const strictnessFactor = (this.config.socialDistanceStrictness - 1) / 9;
+            dx *= 1 - strictnessFactor;
+            dy *= 1 - strictnessFactor;
         }
         
         // Обновляем позицию
@@ -76,13 +80,24 @@ class Person {
         
       }
 
+    /**
+     * Генерирует случайную позицию для человека
+     * @param {number} canvasWidth - Ширина канвы
+     * @param {number} canvasHeight - Высота канвы
+     * @returns {Object} Позиция человека
+     */
     genRandomPosition(canvasWidth, canvasHeight){
         return {
             x: Math.random() * (canvasWidth - 2 * this.radius) + this.radius,
             y: Math.random() * (canvasHeight- 2 * this.radius) + this.radius
         }
     }
-    
+
+    /**
+     * Генерирует случайную скорость для человека
+     * @param {number} speed - Скорость
+     * @returns {Object} Скорость человека
+     */
     genRandomVelocity(speed){
         const angle = Math.random() * 2 * Math.PI;
         return {
@@ -91,6 +106,11 @@ class Person {
         }
     }
     
+    /**
+     * Проверяет, не пересекается ли человек с другим человеком
+     * @param {Object} otherPerson - Другой человек
+     * @returns {boolean} Пересекаются ли человеки
+     */
     collidesWith(otherPerson){
         if(this.dead || otherPerson.dead) return false;
         
@@ -100,28 +120,54 @@ class Person {
         return distance <= this.radius + otherPerson.radius;
     }                                           
 
-    // Метод попытки заразить текущего человека
+    /**
+     * Метод попытки заразить текущего человека
+     * @param {number} currentTime - Текущее время
+     */
     infect(currentTime) {
-        // Если человек здоров и не имеет иммунитета
-        if (this.status === 'healthy' && !this.immune) {
-        // С вероятностью, заданной в конфиге, заражаем
-            if (Math.random() < this.config.infectivityPercent) {
-                this.status = 'infected';       // меняем статус на инкубацию
-                this.infectionStartTime = currentTime; // сохраняем время заражения
-            }
+        // Если человек здоров и (не имеет иммунитета ИЛИ разрешено повторное заражение)
+        if ((this.status === 'healthy' && !this.immune) || (this.status === 'recovered' && this.config.recurrentInfection)) {
+        
+          // Рассчитываем вероятность заражения с учетом повторных заражений
+          let infectionProbability = this.config.infectivityPercent;
+          
+          // Если это повторное заражение, снижаем вероятность
+          if (this.status === 'recovered') {
+            infectionProbability *= Math.pow(this.config.reinfectionImmunityFactor, this.reinfectionCount + 1);
+          }
+        
+          // С вероятностью, заданной в конфиге, заражаем
+          if (Math.random() < infectionProbability) {
+              // Проверяем, было ли это повторное заражение (до изменения статуса)
+              const wasRecovered = this.status === 'recovered';
+              
+              this.status = 'infected';       // меняем статус на инкубацию
+              this.infectionStartTime = currentTime; // сохраняем время заражения
+              
+              // Если это повторное заражение, увеличиваем счетчик
+              if (wasRecovered) {
+                this.reinfectionCount++;
+                if (this.immune) {
+                  this.immune = false;
+                }
+              }
+          }
         }
     }
 
-  // Обновление состояния по времени: переход из одной стадии в другую
+  /**
+   * Обновление состояния человека
+   * @param {number} currentTime - Текущее время
+   */
   update(currentTime) {
     // Если инкубационный период завершён
-    if (this.status === 'infected' && currentTime - this.infectionStartTime >= this.config.incubationPeriod) {
+    if (this.status === 'infected' && currentTime - this.infectionStartTime >= this.config.getIncubationPeriodMs()) {
       this.status = 'symptomatic';      // переходим к симптоматическому периоду
       this.symptomStartTime = currentTime; // фиксируем время начала симптомов
     }
-
+    
     // Если симптоматический период закончился
-    if (this.status === 'symptomatic' && currentTime - this.symptomStartTime >= this.config.symptomaticPeriod) {
+    if (this.status === 'symptomatic' && currentTime - this.symptomStartTime >= this.config.getSymptomaticPeriodMs()) {
       // С вероятностью смертности человек умирает
       if (Math.random() < this.config.mortalityRate) {
         this.status = 'dead';
@@ -134,5 +180,3 @@ class Person {
     }
   }
 }
-
-export default Person;
