@@ -74,6 +74,10 @@ export default class SettingsPanel extends Component {
             infectivityPercent: 0.3,
             incubationPeriod: 3, 
             symptomaticPeriod: 5,
+            incubationPeriodMin: 1,
+            incubationPeriodMax: 5,
+            symptomaticPeriodMin: 2,
+            symptomaticPeriodMax: 7,
             socialDistancePercent: 0.3,
             socialDistanceStrictness: 5,    
             hospitalCapacityPercent: 0.2,
@@ -139,43 +143,63 @@ export default class SettingsPanel extends Component {
                         </span>
                     </div>
 
-                    {/* Слайдер инкубационного периода */}
+                    {/* Слайдер разброса инкубационного периода */}
                     <div className="setting-item">
-                        <label htmlFor="incubationPeriod">
-                            Инкубационный период: {this.formatTime(config.incubationPeriod)}
+                        <label htmlFor="incubationPeriodMin">
+                            Инкубационный период (разброс): {config.incubationPeriodMin} - {config.incubationPeriodMax} дней
                         </label>
                         <input
                             type="range"
-                            id="incubationPeriod"
+                            id="incubationPeriodMin"
                             min="1"
+                            max={config.incubationPeriodMax}
+                            step="1"
+                            value={config.incubationPeriodMin}
+                            onChange={(e) => this.handleInputChange('incubationPeriodMin', e)}
+                            disabled={isRunning}
+                        />
+                        <input
+                            type="range"
+                            id="incubationPeriodMax"
+                            min={config.incubationPeriodMin}
                             max="30"
                             step="1"
-                            value={config.incubationPeriod}
-                            onChange={(e) => this.handleInputChange('incubationPeriod', e)}
+                            value={config.incubationPeriodMax}
+                            onChange={(e) => this.handleInputChange('incubationPeriodMax', e)}
                             disabled={isRunning}
                         />
                         <span className="setting-description">
-                            Количество дней от заражения до появления первых симптомов
+                            Минимальный и максимальный инкубационный период (в днях)
                         </span>
                     </div>
 
-                    {/* Слайдер симптоматического периода */}
+                    {/* Слайдер разброса симптоматического периода */}
                     <div className="setting-item">
-                        <label htmlFor="symptomaticPeriod">
-                            Симптоматический период: {this.formatTime(config.symptomaticPeriod)}
+                        <label htmlFor="symptomaticPeriodMin">
+                            Симптоматический период (разброс): {config.symptomaticPeriodMin} - {config.symptomaticPeriodMax} дней
                         </label>
                         <input
                             type="range"
-                            id="symptomaticPeriod"
+                            id="symptomaticPeriodMin"
                             min="1"
+                            max={config.symptomaticPeriodMax}
+                            step="1"
+                            value={config.symptomaticPeriodMin}
+                            onChange={(e) => this.handleInputChange('symptomaticPeriodMin', e)}
+                            disabled={isRunning}
+                        />
+                        <input
+                            type="range"
+                            id="symptomaticPeriodMax"
+                            min={config.symptomaticPeriodMin}
                             max="90"
                             step="1"
-                            value={config.symptomaticPeriod}
-                            onChange={(e) => this.handleInputChange('symptomaticPeriod', e)}
+                            value={config.symptomaticPeriodMax}
+                            onChange={(e) => this.handleInputChange('symptomaticPeriodMax', e)}
                             disabled={isRunning}
                         />
                         <span className="setting-description">
-                            Количество дней проявления симптомов после инкубационного периода
+                            Минимальный и максимальный симптоматический период (в днях)
                         </span>
                     </div>
                     

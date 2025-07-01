@@ -4,6 +4,10 @@ export default class simulationConfig {
     infectivityPercent;     //* Вероятность заражения при столкновении (от 0 до 1)
     incubationPeriod;       //* Период инкубации в днях (1 день = 5000мс)
     symptomaticPeriod;      //* Период симптомов в днях (1 день = 5000мс)
+    incubationPeriodMin;    //* Минимальный инкубационный период (дни)
+    incubationPeriodMax;    //* Максимальный инкубационный период (дни)
+    symptomaticPeriodMin;   //* Минимальный симптоматический период (дни)
+    symptomaticPeriodMax;   //* Максимальный симптоматический период (дни)
     socialDistancePercent;  //* Процент людей, которые будут держать дистанцию (от 0 до 1)
     socialDistanceStrictness; //* Строгость соблюдения дистанции (от 1 до 10)
     recoverySpeed;          //* Скорость выздоровления в мс
@@ -21,6 +25,10 @@ export default class simulationConfig {
         this.infectivityPercent = param.infectivityPercent || 0.3;
         this.incubationPeriod = param.incubationPeriod || 1; 
         this.symptomaticPeriod = param.symptomaticPeriod || 1; 
+        this.incubationPeriodMin = param.incubationPeriodMin || 1;
+        this.incubationPeriodMax = param.incubationPeriodMax || 5;
+        this.symptomaticPeriodMin = param.symptomaticPeriodMin || 2;
+        this.symptomaticPeriodMax = param.symptomaticPeriodMax || 7;
         this.socialDistancePercent = param.socialDistancePercent || 0.3;
         this.socialDistanceStrictness = param.socialDistanceStrictness || 5; 
         this.recoverySpeed = param.recoverySpeed || 3000;

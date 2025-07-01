@@ -138,12 +138,12 @@ export default class Person {
         
           // С вероятностью, заданной в конфиге, заражаем
           if (Math.random() < infectionProbability) {
-              // Проверяем, было ли это повторное заражение (до изменения статуса)
               const wasRecovered = this.status === 'recovered';
-              
               this.status = 'infected';       // меняем статус на инкубацию
               this.infectionStartTime = currentTime; // сохраняем время заражения
-              
+              // Индивидуальный инкубационный и симптоматический период
+              this.incubationPeriodDays = this.getRandomInt(this.config.incubationPeriodMin, this.config.incubationPeriodMax);
+              this.symptomaticPeriodDays = this.getRandomInt(this.config.symptomaticPeriodMin, this.config.symptomaticPeriodMax);
               // Если это повторное заражение, увеличиваем счетчик
               if (wasRecovered) {
                 this.reinfectionCount++;
@@ -153,6 +153,12 @@ export default class Person {
               }
           }
         }
+    }
+
+    getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
   /**
