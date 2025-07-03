@@ -4,6 +4,9 @@ import SimCanvas from './simCanvas';
 import SettingsPanel from './SettingsPanel';
 import StatsPanel from './StatsPanel';
 import simulationConfig from './simulatiionConfig';
+//import Plot from './Plot';
+import ChartPlot from './ChartPlot';
+import virusImage from './images/virusImage.png';
 
 /**
  * Главный компонент приложения
@@ -22,6 +25,13 @@ function App() {
   
   // Состояние для хранения данных о людях для статистики
   const [persons, setPersons] = useState([]);
+  
+  // Массивы для графика
+  const [healthyArr, setHealthyArr] = useState([]);
+  const [infectedArr, setInfectedArr] = useState([]);
+  const [symptomaticArr, setSymptomaticArr] = useState([]);
+  const [recoveredArr, setRecoveredArr] = useState([]);
+  const [deadArr, setDeadArr] = useState([]);
   
   // Начальная конфигурация симуляции
   const [config, setConfig] = useState(new simulationConfig({
@@ -43,7 +53,7 @@ function App() {
     reinfectionImmunityFactor: 0.5,
     width: 1400,
     height: 900,
-    speed: 2
+    speed: 1
   }));
 
   /**
@@ -65,10 +75,26 @@ function App() {
 
   /**
    * Обрабатывает обновления статистики от симуляции
-   * @param {Array} personsArray - Массив людей из симуляции
+   * @param {Object} stats - Объект статистики
    */
-  const handleStatsUpdate = (personsArray) => {
-    setPersons(personsArray);
+  const handleStatsUpdate = (stats) => {
+    setPersons(stats.persons);
+    setHealthyArr(arr => [...arr, stats.healthy]);
+    setInfectedArr(arr => [...arr, stats.infected]);
+    setSymptomaticArr(arr => [...arr, stats.symptomatic]);
+    setRecoveredArr(arr => [...arr, stats.recovered]);
+    setDeadArr(arr => [...arr, stats.dead]);
+  };
+
+  /**
+   * Сброс массивов статистики
+   */
+  const handleResetStats = () => {
+    setHealthyArr([]);
+    setInfectedArr([]);
+    setSymptomaticArr([]);
+    setRecoveredArr([]);
+    setDeadArr([]);
   };
 
   /**
@@ -95,6 +121,7 @@ function App() {
    * Сбрасывает симуляцию в начальное состояние
    */
   const resetSimulation = () => {
+    handleResetStats();
     setIsRunning(false);
     if (simCanvasRef.current) {
       simCanvasRef.current.resetSimulation();
@@ -105,8 +132,11 @@ function App() {
     <div className="app">
       {/* Header */}
       <header className="app-header">
-        <h1>Модель распространения эпидемии</h1>
-        <p>Интерактивная симуляция распространения эпидемии с настраиваемыми параметрами</p>
+        <h1 className="app-title">Модель распространения эпидемии</h1>
+        <img src={virusImage} alt="logo" className="virus-image" />
+        <p style={{marginLeft: '850px', fontSize: '16px', color: '#666'}}>
+          Реализовал Непомнящий Кирилл, студент 2 курса, группа ПИ-33, 2025 год.
+        </p>
       </header>
 
       {/* Body */}
@@ -123,6 +153,16 @@ function App() {
           <StatsPanel 
             persons={persons}
             isRunning={isRunning}
+          />
+          {/* График эпидемии */}
+          <ChartPlot
+            healthy={healthyArr}
+            infected={infectedArr}
+            symptomatic={symptomaticArr}
+            recovered={recoveredArr}
+            dead={deadArr}
+            width={600}
+            height={300}
           />
         </div>
 
@@ -170,8 +210,7 @@ function App() {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          Эта симуляция демонстрирует, как эпидемии распространяются в популяции 
-          и как меры социального дистанцирования могут влиять на скорость ихраспространения.
+          Интерактивная модель распространения эпидемии с настраиваемыми параметрами.
         </p>
       </footer>
     </div>

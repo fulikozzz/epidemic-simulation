@@ -164,8 +164,9 @@ export default class Person {
   /**
    * Обновление состояния человека
    * @param {number} currentTime - Текущее время
+   * @param {object} simulationState - Состояние симуляции по больнице (symptomaticCount, hospitalCapacity)
    */
-  update(currentTime) {
+  update(currentTime, simulationState = {}) {
     // Если инкубационный период завершён
     if (this.status === 'infected' && currentTime - this.infectionStartTime >= this.config.getIncubationPeriodMs()) {
       this.status = 'symptomatic';      // переходим к симптоматическому периоду
@@ -174,8 +175,19 @@ export default class Person {
     
     // Если симптоматический период закончился
     if (this.status === 'symptomatic' && currentTime - this.symptomStartTime >= this.config.getSymptomaticPeriodMs()) {
+      // Базовая вероятность смертности
+      let mortalityProbability = this.config.mortalityRate;
+      
+      // Проверяем переполнение больницы
+      if (
+        simulationState.symptomaticCount > simulationState.hospitalCapacity &&
+        simulationState.hospitalCapacity > 0
+      ) {
+        mortalityProbability *= 2.5;
+      }
+      
       // С вероятностью смертности человек умирает
-      if (Math.random() < this.config.mortalityRate) {
+      if (Math.random() < mortalityProbability) {
         this.status = 'dead';
         this.dead = true;                // останавливаем движение
       } else {

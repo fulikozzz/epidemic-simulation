@@ -93,10 +93,22 @@ const SimCanvas = forwardRef(({ config, onSimulationStateChange, onStatsUpdate }
 
     const time = performance.now(); // Время в миллисекундах
 
+    // Считаем статистику 
+    let healthy = 0, infected = 0, symptomatic = 0, recovered = 0, dead = 0;
+    for(const person of personsRef.current){
+      if (person.status === 'healthy') healthy++;
+      else if (person.status === 'infected') infected++;
+      else if (person.status === 'symptomatic') symptomatic++;
+      else if (person.status === 'recovered') recovered++;
+      else if (person.status === 'dead') dead++;
+    }
+    const hospitalCapacity = Math.round((config.hospitalCapacityPercent || 0) * config.totalPeople);
+    const simulationState = { symptomaticCount: symptomatic, hospitalCapacity };
+
     // Движение и обновление состояния людей
     for(const person of personsRef.current){
       person.move(canvasWidth, canvasHeight);
-      person.update(time);
+      person.update(time, simulationState);
 
       // Проверка столкновений с другими людьми
       for(const otherPerson of personsRef.current){
@@ -153,7 +165,16 @@ const SimCanvas = forwardRef(({ config, onSimulationStateChange, onStatsUpdate }
     // Обновление статуса для статистики
     if (onStatsUpdate) {
       const personsArray = [...personsRef.current];
-      onStatsUpdate(personsArray);
+      
+      onStatsUpdate({
+        healthy,
+        infected,
+        symptomatic,
+        recovered,
+        dead,
+        hospitalCapacity,
+        persons: personsArray
+      });
     }
     
     animationRef.current = requestAnimationFrame(draw);
